@@ -170,7 +170,7 @@ class MarketValidationAgent(BaseAgent):
                 "market_gaps": results[1]["result"]["gaps"],
                 "market_metrics": results[2]["result"],
                 "recommendation": "Proceed with development focusing on AI automation and "
-                                  "developer experience",
+                "developer experience",
                 "risks": ["Highly competitive market", "Need for significant differentiation"],
                 "next_steps": [
                     "Define unique value proposition",
