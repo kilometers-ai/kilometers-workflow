@@ -48,3 +48,43 @@ python examples/run_workflow.py
 - Task Breakdown: `docs/TASK_BREAKDOWN.md`
 - Architecture: `ARCHITECTURE_SUMMARY.md`
 - Scaffolding Guide: `docs/guides/QUICK_SCAFFOLDING.md`
+
+## 🔄 GitHub Workflows
+
+Simple, essential CI/CD automation for code quality and releases:
+
+### Available Workflows
+
+#### 🔍 **CI** (`.github/workflows/ci.yml`)
+- Code formatting check (Black)
+- Linting (Ruff)  
+- Basic import tests
+- **Triggers:** Push/PR to main
+
+#### 🔒 **Security** (`.github/workflows/security.yml`)
+- Dependency vulnerability scanning
+- **Triggers:** Push to main
+
+#### 🐳 **Docker** (`.github/workflows/docker.yml`)
+- Docker Compose validation
+- Basic Docker image build test
+- **Triggers:** Changes to Docker files
+
+#### 📦 **Release** (`.github/workflows/release.yml`)
+- Automated GitHub releases with built packages
+- **Triggers:** Git tags (`v*`)
+
+### Usage
+
+```bash
+# Run checks locally
+black --check --line-length 100 .
+ruff check .
+pytest tests/ -v
+
+# Create a release
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+All workflows focus on **essential automation only** - no over-engineering.

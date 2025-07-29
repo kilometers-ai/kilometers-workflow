@@ -1,0 +1,30 @@
+name: Docker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infrastructure/docker/**"
+      - "docker-compose.yml"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Test docker-compose
+        run: |
+          if [ -f docker-compose.yml ]; then
+            docker-compose config
+            echo "Docker compose configuration valid"
+          fi
+
+      - name: Build Docker image
+        run: |
+          if [ -f infrastructure/docker/Dockerfile.python ]; then
+            docker build -f infrastructure/docker/Dockerfile.python -t kilometers-workflow:test .
+            echo "Docker image built successfully"
+          fi
