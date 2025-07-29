@@ -1,0 +1,78 @@
+version: "3.8"
+
+services:
+  # Python AI Services
+  workflow-engine:
+    build:
+      context: .
+      dockerfile: ./infrastructure/docker/Dockerfile.python
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/kilometers_workflow
+    volumes:
+      - ./:/app
+    depends_on:
+      - redis
+      - postgres
+    ports:
+      - "8000:8000"
+    command: uvicorn services.api_gateway.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # .NET Services (if needed)
+  # dotnet-service:
+  #   build:
+  #     context: .
+  #     dockerfile: ./infrastructure/docker/Dockerfile.dotnet
+  #   environment:
+  #     - ConnectionStrings__DefaultConnection=Server=postgres;Database=kilometers_workflow;User Id=postgres;Password=password;
+  #   depends_on:
+  #     - postgres
+  #   ports:
+  #     - "5000:5000"
+
+  # React Flow Visualizer
+  # workflow-visualizer:
+  #   build:
+  #     context: ./frontend/workflow-visualizer
+  #     dockerfile: ../../infrastructure/docker/Dockerfile.node
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - REACT_APP_API_URL=http://localhost:8000
+  #   volumes:
+  #     - ./frontend/workflow-visualizer:/app
+  #     - /app/node_modules
+
+  # Message Queue
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # Database
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=kilometers_workflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # Monitoring
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    ports:
+      - "6006:6006"
+    environment:
+      - PHOENIX_PORT=6006
+
+volumes:
+  redis_data:
+  postgres_data:
